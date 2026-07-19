@@ -25,3 +25,4 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.isfname:append("@-@")
 vim.opt.inccommand = "split"
+vim.g.netrw_banner = 0

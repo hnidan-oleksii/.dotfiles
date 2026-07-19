@@ -15,6 +15,12 @@ return {
 
 	config = function()
 		require("telescope").setup({
+			defaults = {
+				file_ignore_patterns = {
+					"helm%-charts/", "provisioning/", "%-k8s/", "/dev/", "/stage/", "/prod/",
+					"model_deployment/", "experiments/", "qa_chatbot_automation/", "tests%-env/",
+				},
+			},
 			extensions = {
 				fzf = {
 					fuzzy = true,
@@ -32,8 +38,10 @@ return {
 		-- Your existing mappings
 		vim.keymap.set("n", "<leader>pf", builtin.find_files)
 		vim.keymap.set("n", "<C-p>", builtin.git_files)
-		vim.keymap.set("n", "<leader>ps", function()
-			builtin.grep_string({ search = vim.fn.input("Grep > ") })
+		vim.keymap.set("n", "<leader>ps", builtin.live_grep)
+		-- find_files but reach ignored infra dirs (helm/provisioning/k8s)
+		vim.keymap.set("n", "<leader>pF", function()
+			builtin.find_files({ no_ignore = true, file_ignore_patterns = {} })
 		end)
 
 		-- Existing Kickstart mappings
