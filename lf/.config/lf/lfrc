@@ -1,0 +1,108 @@
+# File previews (wrapper forces ctpv's fifo id; lf's 6th arg breaks ctpv 1.1)
+set previewer /home/surikadt/.config/lf/ctpv-preview
+set cleaner ctpvclear
+&ctpv -s $id
+&ctpvquit $id
+
+# Basic Settings
+set hidden false
+set ignorecase true
+set icons true
+# set sixel true
+set rulerfmt "%d  |%a  |%p  |\033[7;31m %m \033[0m  |\033[7;33m %c \033[0m  |\033[7;35m %s \033[0m  |\033[7;34m %f \033[0m  |%i/%t"
+
+# Custom Functions
+cmd mkdir ${{
+  printf "Directory Name: "
+  read ans
+  mkdir $ans
+}}
+
+cmd mkfile ${{
+  printf "File Name: "
+  read ans
+  $EDITOR $ans
+}}
+
+cmd setwallpaper ${{
+    wp "$f"
+}}
+
+# Extract any archive by content; atool delegates to installed backends
+cmd unarchive ${{ aunpack -- "$f"; }}
+
+# Trash via gio (spaces/collisions/restore-safe)
+cmd trash ${{ printf '%s\n' "$fx" | xargs -d '\n' -r gio trash --; }}
+
+cmd open &{{
+    case $(file --mime-type -Lb "$f") in
+        text/*|application/json) lf -remote "send $id \$nvim \"$fx\"";;
+        *) setsid -f xdg-open "$f" >/dev/null 2>&1 ;;
+    esac
+}}
+
+cmd on-select &{{
+    lf -remote "send $id set statfmt \"$(exa -ld --color=always "$f")\""
+}}
+
+# Copy files as a URI list so they paste as attachments (not raw bytes)
+cmd copy-file ${{
+    uris=$(printf '%s' "$fx" | python3 -c '
+import sys, pathlib
+for l in sys.stdin.read().splitlines():
+    if l: print(pathlib.Path(l).resolve().as_uri())
+')
+    if [ -n "$WAYLAND_DISPLAY" ]; then
+        printf '%s' "$uris" | wl-copy --type text/uri-list
+    else
+        printf '%s' "$uris" | xclip -selection clipboard -target text/uri-list
+    fi
+}}
+
+cmd fzf_jump ${{
+    res="$(find . 2>/dev/null | fzf --reverse --header='Jump to location')"
+    if [ -n "$res" ]; then
+        if [ -d "$res" ]; then
+            cmd="cd"
+        else
+            cmd="select"
+        fi
+        res="$(printf '%s' "$res" | sed 's/\\/\\\\/g;s/"/\\"/g')"
+        lf -remote "send $id $cmd \"$res\""
+    fi
+}}
+
+# Bindings
+map m
+map au unarchive
+map <c-f> :fzf_jump
+map Cp copy-file
+
+# Basic Functions
+map . set hidden!
+map T trash
+map p paste
+map d cut
+map y copy
+map <enter> open
+map R reload
+map mf mkfile
+map mk mkdir
+map bg setwallpaper
+map c clear
+
+# Movement
+map gr cd /
+map gc cd ~/.config
+map gd cd ~/Downloads
+map gp cd ~/Pictures
+map gP cd ~/personal
+map gv cd ~/Videos
+map gt cd ~/.local/share/Trash/files
+map gl cd ~/.local
+map gu cd ~/Univ
+map gm cd ~/Music
+map gs cd ~/personal/ds
+map gw cd ~/work
+map god cd ~/work/bridgewise/different
+map goc cd ~/work/bridgewise/BridgewiseChatbot

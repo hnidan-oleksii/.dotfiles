@@ -1,0 +1,14 @@
+com.brave.Browser
+com.github.d4nj1.tlpui
+com.github.taiko2k.tauonmb
+com.github.tchx84.Flatseal
+com.obsproject.Studio
+com.usebottles.bottles
+net.ankiweb.Anki
+one.ablaze.floorp
+org.kde.kid3
+org.nickvision.tubeconverter
+org.nicotine_plus.Nicotine
+org.prismlauncher.PrismLauncher
+org.qbittorrent.qBittorrent
+org.telegram.desktop

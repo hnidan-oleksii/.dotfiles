@@ -1,0 +1,7 @@
+[user]
+	email = gnidanol@gmail.com
+	name = hnidan-oleksii
+[core]
+	editor = nvim
+[includeIf "gitdir:~/work/"]
+    path = ~/work/.gitconfig

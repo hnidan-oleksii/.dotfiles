@@ -1,0 +1,45 @@
+[font]
+normal = { family = "0xProtoNerdFont", style = "Regular" }
+size = 12
+
+[env]
+TERM = "xterm-256color"
+
+[[keyboard.bindings]]
+key = "["
+mods = "Control"
+mode = "~Search"
+action = "ToggleViMode"
+
+[[keyboard.bindings]]
+key = "Q"
+mode = "Vi|~Search"
+action = "ToggleViMode"
+
+[colors.primary]
+background = "#0f0f17"
+foreground = "#aaaaaa"
+
+[colors.cursor]
+text = "#0f0f17"
+cursor = "#a09983"
+
+[colors.normal]
+black = "#080412"
+red = "#8c312d"
+green = "#5a724e"
+yellow = "#967e49"
+blue = "#556e94"
+magenta = "#6b5a86"
+cyan = "#4a6f6a"
+white = "#9c9479"
+
+[colors.bright]
+black = "#3c3b37"
+red = "#842626"
+green = "#6b7a4b"
+yellow = "#978155"
+blue = "#537c88"
+magenta = "#6b647a"
+cyan = "#5c7d78"
+white = "#a09983"

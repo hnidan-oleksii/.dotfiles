@@ -1,0 +1,3 @@
+#!/bin/sh
+# Force real $id; drop lf's 6th arg (ctpv 1.1 misreads it as the fifo id)
+exec ctpv "$1" "$2" "$3" "$4" "$5" "$id"
