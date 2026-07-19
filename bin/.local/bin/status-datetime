@@ -1,0 +1,5 @@
+#!/bin/sh
+time="$(date +%H:%M)"
+date="$(date +"%a(%d) %b(%m) %Y")"
+
+echo $date // $time " "

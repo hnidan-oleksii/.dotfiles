@@ -1,0 +1,52 @@
+#!/bin/bash
+
+while : ; do
+    #Battery remaning
+    bat_dir="/sys/class/power_supply/BAT0/"
+    if [ -e "${bat_dir}" ] ; then
+        bat="$(cat /sys/class/power_supply/BAT0/capacity)"
+        bat_stat="$(cat /sys/class/power_supply/BAT0/status)"
+
+        #If the status of battery is unkonwn, the charger might just be plugged in.
+        while [[ $bat_stat = 'Unknown'  ]] ; do
+            bat_stat="$(cat /sys/class/power_supply/BAT0/status)"
+        done
+
+        if [ $bat_stat = 'Discharging' ] ; then
+			$bat_stat="-"
+		else
+			$bat_stat="+"
+		fi
+        bat=${bat}%
+    else
+        bat_stat="??"
+        bat=""
+    fi
+
+    #Temprature
+    temp="$(sensors | awk '/^CPU/ {print $2}' | sed 's/+// ')" # get the temprature and ignore the +
+
+    #time and date
+    time="$(date +%H:%M)"
+    date="$(date date +%d\/%m\/%Y\ %a)"
+
+    #RAM usage
+    ram="$(free -m | grep Mem | awk '{printf " %d%", $3}')"
+
+    #Volume
+    volume=$(amixer sget Master | grep -iE 'Front\ Left:\ Playback' | awk -F'[][]' '{ print $2}') 
+    
+    # Disk, Battery, Volume, Ram, Process, Temp, Time, date
+    text=$(printf "\
+  [ cpu:%s ] [ ram:%s ]\
+  [ Volume:%s ] [ %s ]\
+  [ %s ] [ %s ]"\
+ "$temp" "$ram" "$volume" "$bat" "$time" "$date"\
+ )
+
+    xsetroot -name "${text}"
+
+    #Sleep for 12 seconds
+    sleep 12
+
+done

@@ -1,0 +1,4 @@
+#!/bin/sh
+temp="$(tlp-stat --temp | awk '/^CPU temp/ {print$4}')"
+
+echo $temp"℃"

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]; then
+	echo "Pass image path as an argumant"
+	exit 1
+fi
+
+feh --bg-fill "$1"

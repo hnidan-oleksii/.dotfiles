@@ -1,0 +1,18 @@
+#!/bin/sh
+SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
+mkdir -p "$SCREENSHOT_DIR"
+
+# Take screenshot and store the filename
+SCREENSHOT_PATH="$SCREENSHOT_DIR/$(date +%Y-%m-%d-%H_%M_%S).png"
+scrot "$SCREENSHOT_PATH" --select --line mode=edge
+
+# Copy to clipboard based on display server
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    if command -v wl-copy >/dev/null 2>&1; then
+        wl-copy --type image/png < "$SCREENSHOT_PATH"
+    fi
+else
+    if command -v xclip >/dev/null 2>&1; then
+        xclip -selection clipboard -target image/png -i "$SCREENSHOT_PATH"
+    fi
+fi

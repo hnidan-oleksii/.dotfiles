@@ -1,0 +1,17 @@
+#!/bin/sh
+bat_dir="/sys/class/power_supply/BAT0/"
+if [ -e ${bat_dir} ] ; then
+	bat="$(cat /sys/class/power_supply/BAT0/capacity)"
+	bat_stat="$(cat /sys/class/power_supply/BAT0/status)"
+
+	if [ "$bat_stat" = "Discharging" ] ; then
+		bat_stat="-"
+	else
+		bat_stat="+"
+	fi
+else
+	bat_stat="?"
+	bat="?%"
+fi
+
+echo $bat_stat$bat"%"

@@ -1,8 +1,6 @@
 # dotfiles
 
-My Fedora configs, managed with [GNU Stow](https://www.gnu.org/software/stow/).
-Each top-level dir is a stow package mirroring `$HOME`; stowing symlinks it into
-place, so the file I edit is the same file tracked here.
+Fedora configs, managed with [GNU Stow](https://www.gnu.org/software/stow/). Each top-level dir is a stow package mirroring `$HOME`
 
 ## Packages
 
@@ -23,20 +21,18 @@ place, so the file I edit is the same file tracked here.
 | tauon       | `~/.var/app/…/TauonMusicBox/tauon.conf`  |
 | wallpapers  | `~/Pictures/wallpapers`                  |
 
-Not stowed: `packages/` (dnf/flatpak lists), `suckless/` (dwm/st patches),
-`floorp/` (userChrome/userContent CSS).
+Not stowed: `packages/` (dnf/flatpak lists), `suckless/` (dwm/st patches), `floorp/` (userChrome/userContent CSS).
 
 ## Install
 
 ```bash
 git clone git@github.com:hnidan-oleksii/.dotfiles.git ~/personal/.dotfiles
 cd ~/personal/.dotfiles
-./install.sh              # stow configs
-./install.sh --packages   # + dnf/flatpak apps
+./install.sh
+./install.sh --packages
 ```
 
-Stow refuses when a target already exists — remove/rename it, or adopt it with
-`./install.sh --adopt` (pulls the existing file in and replaces it with a symlink).
+Stow refuses when a target already exists — remove/rename it, or adopt it with `./install.sh --adopt` (pulls the existing file in and replaces it with a symlink).
 
 Unlink a package: `stow -D -t ~ <pkg>`. Re-link after edits: `stow -R -t ~ <pkg>`.
 
@@ -50,8 +46,7 @@ stow -t ~ foo
 
 ## suckless (dwm / st)
 
-Patches are diffs against pristine dwm 6.5 / st 0.9.2, so I check out the matching
-tag before applying:
+Patches are diffs against dwm 6.5 / st 0.9.2
 
 ```bash
 git clone https://git.suckless.org/dwm && cd dwm
@@ -61,10 +56,3 @@ sudo make clean install
 ```
 
 Same for st (tag `0.9.2`). dwmblocks and dmenu are unmodified upstream.
-
-## Daily use
-
-```bash
-# edit any config in place, then:
-git add -A && git commit && git push
-```

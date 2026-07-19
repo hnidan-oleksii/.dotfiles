@@ -1,0 +1,4 @@
+#!/bin/sh
+volume=$(amixer sget Master | grep -iE 'Front\ Left:\ Playback' | awk -F'[][]' '{ print $2}') 
+
+echo $volume

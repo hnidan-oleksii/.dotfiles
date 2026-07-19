@@ -1,0 +1,4 @@
+#!/bin/sh
+ram="$(free -m | grep Mem | awk '{printf ($3)/1000}' | cut -c-4)"
+
+echo $ram'G'
