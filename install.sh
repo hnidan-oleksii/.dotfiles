@@ -21,6 +21,13 @@ if [ "$INSTALL_PACKAGES" -eq 1 ]; then
   sudo dnf install -y $(grep -vE '^\s*#' packages/dnf.txt | tr '\n' ' ') || true
   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
   xargs -a packages/flatpak.txt -r flatpak install -y flathub || true
+
+  flatpak override --user org.telegram.desktop \
+    --filesystem=xdg-music:ro --filesystem=xdg-videos:ro \
+    --filesystem=xdg-pictures:ro --filesystem=xdg-download:ro
+  flatpak override --user one.ablaze.floorp \
+    --filesystem=xdg-music:ro --filesystem=xdg-videos:ro \
+    --filesystem=xdg-pictures:ro --filesystem=xdg-download
 fi
 
 stow "${STOW_FLAGS[@]}" -t "$HOME" "${PACKAGES[@]}"
