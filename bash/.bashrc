@@ -27,3 +27,9 @@ fi
 unset rc
 . "$HOME/.cargo/env"
 export XDG_RUNTIME_DIR=/run/user/1000
+
+# history: drop dups and space-prefixed (secret) commands
+export HISTCONTROL=ignoreboth
+
+# fzf: navigable Ctrl-R history + Ctrl-T files + completion
+eval "$(fzf --bash)"

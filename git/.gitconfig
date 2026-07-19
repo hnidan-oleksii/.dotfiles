@@ -5,3 +5,16 @@
 	editor = nvim
 [includeIf "gitdir:~/work/"]
     path = ~/work/.gitconfig
+[alias]
+	s = status
+	co = checkout
+	st = stash
+	stp = stash pop
+	ap = add -p
+	an = add -N
+	ca = commit --amend
+	cm = commit -m
+	dc = diff --cached
+	lo = log --oneline --graph
+[help]
+	autocorrect = prompt
