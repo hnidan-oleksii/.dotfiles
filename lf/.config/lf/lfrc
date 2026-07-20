@@ -93,16 +93,17 @@ map c clear
 
 # Movement
 map gr cd /
+map gT cd /tmp
 map gc cd ~/.config
+map gl cd ~/.local
+map gt cd ~/.local/share/Trash/files
 map gd cd ~/Downloads
+map gm cd ~/Music
 map gp cd ~/Pictures
 map gP cd ~/personal
-map gv cd ~/Videos
-map gt cd ~/.local/share/Trash/files
-map gl cd ~/.local
-map gu cd ~/Univ
-map gm cd ~/Music
 map gs cd ~/personal/ds
+map gv cd ~/Videos
+map gu cd ~/Univ
 map gw cd ~/work
 map god cd ~/work/bridgewise/different
 map goc cd ~/work/bridgewise/BridgewiseChatbot
