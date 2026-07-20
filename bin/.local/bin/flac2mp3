@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+usage() {
+    cat <<EOF
+Usage:
+    $(basename "$0") [INPUT_DIR] [OUTPUT_DIR]
+
+INPUT_DIR  (default: .)
+OUTPUT_DIR (default: /tmp/<path relative to \$HOME>)
+EOF
+}
+
+[[ "${1:-}" =~ ^(-h|--help)$ ]] && { usage; exit 0; }
+
+INPUT="$(realpath "${1:-.}")"
+
+if [[ ! -d "$INPUT" ]]; then
+    echo "Not a directory: $INPUT" >&2
+    exit 1
+fi
+
+if [[ $# -ge 2 ]]; then
+    OUTPUT_ROOT="$(realpath -m "$2")"
+else
+    HOME_REAL="$(realpath "$HOME")"
+
+    case "$INPUT" in
+        "$HOME_REAL")
+            REL=""
+            ;;
+        "$HOME_REAL"/*)
+            REL="${INPUT#$HOME_REAL/}"
+            ;;
+        *)
+            echo "Input is outside \$HOME."
+            echo "Specify an output directory."
+            exit 1
+            ;;
+    esac
+
+    OUTPUT_ROOT="/tmp/$REL"
+fi
+
+mkdir -p "$OUTPUT_ROOT"
+
+convert_one() {
+    local src="$1"
+    local rel dst
+
+    rel="${src#"$INPUT"/}"
+    dst="$OUTPUT_ROOT/${rel%.*}.mp3"
+
+    mkdir -p "$(dirname "$dst")"
+
+    if [[ -e "$dst" ]]; then
+        printf 'Skipping: %s\n' "$dst"
+        return 0
+    fi
+
+    printf 'Converting: %s\n' "$src"
+
+    ffmpeg \
+        -hide_banner \
+        -loglevel warning \
+        -nostdin \
+        -threads 1 \
+        -i "$src" \
+        -map_metadata 0 \
+        -map 0:a \
+        -map 0:v? \
+        -c:a libmp3lame \
+        -q:a 0 \
+        -c:v copy \
+        -id3v2_version 3 \
+        -y \
+        "$dst"
+
+    touch -r "$src" "$dst"
+}
+
+export -f convert_one
+export INPUT OUTPUT_ROOT
+
+find "$INPUT" -type f -iname '*.flac' -print0 |
+parallel \
+    --jobs "$(nproc)" \
+    --bar \
+    --halt soon,fail=1 \
+    -0 \
+    convert_one
+
+echo
+echo "Done."
+echo "Output: $OUTPUT_ROOT"
