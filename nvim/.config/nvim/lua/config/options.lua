@@ -20,7 +20,7 @@ vim.opt.scrolloff = 8
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
 vim.opt.termguicolors = true
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "120"
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.isfname:append("@-@")

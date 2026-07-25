@@ -57,13 +57,59 @@ def rule(label: str, fill: str) -> str:
     return prefix + fill * max(0, WIDTH - len(prefix))
 
 
+def render_record(header: list[str], fields: list[str], idx: int, total: int) -> str:
+    ncols = max(len(header), len(fields))
+    out = [f"IDX\t{idx}\t{total}", rule(f"record {idx + 1} / {total}", "═")]
+    for c in range(ncols):
+        name = header[c] if c < len(header) else f"col{c}"
+        val = fields[c] if c < len(fields) else ""
+        out.append("")
+        out.append(rule(name, "─"))
+        out.extend(val.split("\n") if val != "" else ["·"])
+    return "\n".join(out)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("file")
     ap.add_argument("--offset", type=int)
     ap.add_argument("--index", type=int)
+    ap.add_argument("--offsets", action="store_true")  # emit boundaries for Lua cache
+    ap.add_argument("--slice", action="store_true")  # render one record via seek (gated on --start)
+    ap.add_argument("--header-len", type=int)
+    ap.add_argument("--start", type=int)
+    ap.add_argument("--len", type=int)
+    ap.add_argument("--idx", type=int)
+    ap.add_argument("--total", type=int)
     args = ap.parse_args()
 
+    # Cache-build: one scan, emit "META<TAB>total<TAB>header_len" then "start<TAB>len" per record
+    if args.offsets:
+        with open(args.file, "rb") as f:
+            data = f.read()
+        records = scan_records(data)
+        if not records:
+            print("META\t0\t0")
+            return
+        body = records[1:]
+        print(f"META\t{len(body)}\t{len(records[0][1])}")
+        if body:
+            print("\n".join(f"{s}\t{len(raw)}" for s, raw in body))
+        return
+
+    # Slice: render one record via seek, no scan
+    if args.start is not None:
+        with open(args.file, "rb") as f:
+            f.seek(0)
+            header_raw = f.read(args.header_len or 0)
+            f.seek(args.start)
+            rec_raw = f.read(args.len or 0)
+        header = parse_fields(header_raw)
+        fields = parse_fields(rec_raw)
+        print(render_record(header, fields, args.idx or 0, args.total or 0))
+        return
+
+    # Legacy full-scan modes (--offset / --index); kept as fallback
     with open(args.file, "rb") as f:
         data = f.read()
 
@@ -94,17 +140,7 @@ def main() -> None:
                 idx = di
                 break
 
-    fields = parse_fields(body[idx][1])
-    ncols = max(len(header), len(fields))
-
-    out = [f"IDX\t{idx}\t{total}", rule(f"record {idx + 1} / {total}", "═")]
-    for c in range(ncols):
-        name = header[c] if c < len(header) else f"col{c}"
-        val = fields[c] if c < len(fields) else ""
-        out.append("")
-        out.append(rule(name, "─"))
-        out.extend(val.split("\n") if val != "" else ["·"])
-    print("\n".join(out))
+    print(render_record(header, parse_fields(body[idx][1]), idx, total))
 
 
 if __name__ == "__main__":

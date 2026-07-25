@@ -16,34 +16,15 @@ return {
 				},
 			},
 		},
-		"hrsh7th/nvim-cmp",
+		-- nvim-cmp itself lives in completion.lua and loads on InsertEnter. This
+		-- one stays eager, but only for default_capabilities() below -- it does
+		-- not pull nvim-cmp in
 		"hrsh7th/cmp-nvim-lsp",
-		"L3MON4D3/LuaSnip",
 	},
 
 	config = function()
 		require("mason").setup()
 		require("mason-lspconfig").setup()
-
-		------------------------------------------------------------------
-		-- Completion
-		------------------------------------------------------------------
-		local cmp = require("cmp")
-
-		cmp.setup({
-			mapping = cmp.mapping.preset.insert({
-				["<C-p>"] = cmp.mapping.select_prev_item(),
-				["<C-n>"] = cmp.mapping.select_next_item(),
-				["<C-y>"] = cmp.mapping.confirm({ select = true }),
-				["<C-Space>"] = cmp.mapping.complete(),
-			}),
-
-			sources = {
-				{ name = "nvim_lsp" },
-				{ name = "path" },
-				{ name = "buffer" },
-			},
-		})
 
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
