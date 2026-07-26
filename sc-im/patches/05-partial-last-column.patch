@@ -1,0 +1,91 @@
+diff --git a/src/cmds/cmds.c b/src/cmds/cmds.c
+index 67133bb..667397b 100644
+--- a/src/cmds/cmds.c
++++ b/src/cmds/cmds.c
+@@ -2596,6 +2596,8 @@ int calc_mobile_rows(struct sheet * sh, int *last_p) {
+     return mobile_rows;
+ }
+
++int last_col_clipped = 0;
++
+ /**
+  * \brief Compute number of mobile (unfrozen) columns to fit on screen
+  *
+@@ -2614,6 +2616,7 @@ int calc_mobile_rows(struct sheet * sh, int *last_p) {
+  */
+ int calc_mobile_cols(struct sheet * sh, int *last_p) {
+     int i, col_space, mobile_cols, last;
++    last_col_clipped = 0;
+
+     /*
+      * Compute the number of frozen columns and the space they need.
+@@ -2652,8 +2655,17 @@ int calc_mobile_cols(struct sheet * sh, int *last_p) {
+             continue;
+         if (sh->col_frozen[i])
+             continue;
+-        if (sh->fwidth[i] > col_space)
++        if (sh->fwidth[i] > col_space) {
++            /* Count a too-wide column anyway so ncurses clips it at the right
++             * edge instead of leaving the space blank. Never curcol: that one
++             * must fit whole, so let the backward loop below reposition. */
++            if (col_space > 0 && i != sh->curcol) {
++                mobile_cols++;
++                last = i;
++                last_col_clipped = 1;
++            }
+             break;
++        }
+         col_space -= sh->fwidth[i];
+         mobile_cols++;
+         last = i;
+diff --git a/src/cmds/cmds.h b/src/cmds/cmds.h
+index 29cfc6c..4db6d97 100644
+--- a/src/cmds/cmds.h
++++ b/src/cmds/cmds.h
+@@ -122,5 +122,6 @@ void fix_col_frozen(struct sheet * sh, int deltac, int ci, int cf);
+ void mark_ent_as_deleted(struct ent * p, int del);
+ int calc_mobile_rows(struct sheet * sh, int *);
+ int calc_mobile_cols(struct sheet * sh, int *);
++extern int last_col_clipped;           // set by calc_mobile_cols: last column shown is cut off
+
+ void pad_and_align (char * str_value, char * numeric_value, int col_width, int align, int padding, wchar_t * str_out, int rowfmt);
+diff --git a/src/cmds/cmds_normal.c b/src/cmds/cmds_normal.c
+index 91a27a1..7c8ebd1 100644
+--- a/src/cmds/cmds_normal.c
++++ b/src/cmds/cmds_normal.c
+@@ -993,13 +993,13 @@ void do_normalmode(struct block * buf) {
+                     break;
+
+                 case L'H':
+-                    scroll = calc_mobile_cols(sh, NULL);
++                    scroll = calc_mobile_cols(sh, NULL) - last_col_clipped;
+                     if (get_conf_int("half_page_scroll")) scroll /= 2;
+                     scroll_left(sh, scroll);
+                     break;
+
+                 case L'L':
+-                    scroll = calc_mobile_cols(sh, NULL);
++                    scroll = calc_mobile_cols(sh, NULL) - last_col_clipped;
+                     if (get_conf_int("half_page_scroll")) scroll /= 2;
+                     scroll_right(sh, scroll);
+                     break;
+diff --git a/src/tui.c b/src/tui.c
+index 6c3ec16..477140f 100644
+--- a/src/tui.c
++++ b/src/tui.c
+@@ -787,8 +787,13 @@ void ui_show_sc_col_headings(WINDOW * win, int nb_mobile_cols) {
+         char *a = coltoa(i);
+         int l1 = (i < 26) ? 1 : 2;
+         int l2 = sh->col_frozen[i] ? 1 : 0;
+-        int f1 = (sh->fwidth[i] - l1 - l2)/2 + l1;
+-        int f2 = sh->fwidth[i] - f1;
++        /* Centre in the visible part, else a clipped column's letter would be
++         * printed past the right edge and never show up. */
++        int fw = sh->fwidth[i];
++        int avail = getmaxx(win) - wincol;
++        if (avail > 0 && fw > avail) fw = avail;
++        int f1 = (fw - l1 - l2)/2 + l1;
++        int f2 = fw - f1;
+         mvwprintw(win, 0, wincol, "%*s%*s", f1, a, -f2, sh->col_frozen[i] ? "!" : "");
+
+         #ifdef USECOLORS

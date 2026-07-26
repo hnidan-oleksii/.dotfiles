@@ -8,6 +8,7 @@ Base commit: **b564571** (upstream `master`)
 | 02 | `02-open-path-metachars.patch` | open files whose path holds shell metachars/spaces/parens: try the literal path before `wordexp` in `load_tbl` |
 | 03 | `03-cursorline.patch` | `set show_cursor` also draws a full-width underline above and below the current row |
 | 04 | `04-sheet-tab-bar.patch` | sheet header shows `[idx/total]` and windows the `{name}` tabs around the current sheet with `<`/`>` on overflow |
+| 05 | `05-partial-last-column.patch` | a column too wide for the space left is drawn clipped at the right edge instead of dropped, leaving the space blank |
 
 ## Apply
 
