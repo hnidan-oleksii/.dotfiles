@@ -1,0 +1,19 @@
+diff --git a/src/file.c b/src/file.c
+index 9e1d96e..1a263f9 100644
+--- a/src/file.c
++++ b/src/file.c
+@@ -2278,7 +2278,13 @@ void load_tbl(char * loading_file) {
+     memcpy(name, loading_file, len+1);
+     #else
+     int rc;
+-    if((rc = wordexp(loading_file, &p, 0))== 0){
++    if (file_exists(loading_file)) {              // literal path (may hold shell metachars) — skip wordexp
++        if (strlen(loading_file) >= sizeof(name)) {
++            sc_info("File path too long: '%s'", loading_file);
++            return;
++        }
++        strcpy(name, loading_file);
++    } else if((rc = wordexp(loading_file, &p, 0))== 0){
+         for (c=0; c < p.we_wordc; c++) {
+             if (c) sprintf(name + strlen(name), " ");
+             sprintf(name + strlen(name), "%s", p.we_wordv[c]);

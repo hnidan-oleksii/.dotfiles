@@ -1,0 +1,32 @@
+diff --git a/src/tui.c b/src/tui.c
+index 28fbd22..6c3ec16 100644
+--- a/src/tui.c
++++ b/src/tui.c
+@@ -822,6 +822,7 @@ int ui_show_content(WINDOW * win, int nb_mobile_rows, int nb_mobile_cols) {
+
+     srange * s = get_selected_range();
+     int conf_underline_grid = get_conf_int("underline_grid");
++    int conf_highlight_row = get_conf_int("show_cursor");
+     int conf_truncate = get_conf_int("truncate");
+     int conf_overlap = get_conf_int("overlap");
+     int conf_autowrap = get_conf_int("autowrap");
+@@ -974,7 +975,8 @@ int ui_show_content(WINDOW * win, int nb_mobile_rows, int nb_mobile_cols) {
+             }
+
+ #ifdef USECOLORS
+-            if (has_colors() && conf_underline_grid) {
++            if (has_colors() && (conf_underline_grid ||
++                (conf_highlight_row && (row == sh->currow || row == sh->currow - 1)))) {
+                 attr_t attr;
+                 short color;
+                 wattr_get(win, &attr, &color, NULL);
+@@ -1015,7 +1017,8 @@ int ui_show_content(WINDOW * win, int nb_mobile_rows, int nb_mobile_cols) {
+                 pad_and_align(text, num, fieldlen, align, (*p)->pad, out, sh->row_format[row]);
+
+ #ifdef USECOLORS
+-                if (has_colors() && conf_underline_grid) {
++                if (has_colors() && (conf_underline_grid ||
++                (conf_highlight_row && (row == sh->currow || row == sh->currow - 1)))) {
+                     attr_t attr;
+                     short color;
+                     wattr_get(win, &attr, &color, NULL);

@@ -1,0 +1,44 @@
+diff --git a/src/cmds/cmds.c b/src/cmds/cmds.c
+index edc0aeb..67133bb 100644
+--- a/src/cmds/cmds.c
++++ b/src/cmds/cmds.c
+@@ -1011,6 +1011,12 @@ void int_deleterow(struct sheet * sh, int row, int mult) {
+             sh->row_format[r] = sh->row_format[r+1];
+         }
+
++        // clear vacated last row; if it filled the last alloc'd row the shift
++        // stops early and aliases its ents up -> double free at teardown
++        if (sh->maxrow < sh->maxrows)
++            for (c = 0; c < sh->maxcols; c++)
++                *ATBL(sh, sh->tbl, sh->maxrow, c) = NULL;
++
+         rebuild_graph(); //TODO CHECK HERE WHY REBUILD IS NEEDED. See NOTE1 in shift.c
+         sync_refs(sh);
+         EvalAll();
+diff --git a/src/formats/xlsx.c b/src/formats/xlsx.c
+index 292f6f1..42135e2 100644
+--- a/src/formats/xlsx.c
++++ b/src/formats/xlsx.c
+@@ -301,7 +301,9 @@ void get_sheet_data(xmlDocPtr doc, xmlDocPtr doc_strings, xmlDocPtr doc_styles)
+                 } else if (
+                 child_node->xmlChildrenNode != NULL &&
+                 ! strcmp((char *) child_node->xmlChildrenNode->name, "v") ){
+-                    double l = atof((char *) child_node->xmlChildrenNode->xmlChildrenNode->content);
++                    double l = (child_node->xmlChildrenNode->xmlChildrenNode != NULL &&
++                                child_node->xmlChildrenNode->xmlChildrenNode->content != NULL)
++                               ? atof((char *) child_node->xmlChildrenNode->xmlChildrenNode->content) : 0;
+                     swprintf(line_interp, FBUFLEN, L"let %s%d=%.15f", coltoa(c), r, l);
+                     send_to_interp(line_interp);
+
+@@ -350,7 +352,10 @@ void get_sheet_data(xmlDocPtr doc, xmlDocPtr doc_strings, xmlDocPtr doc_styles)
+                         swprintf(line_interp, FBUFLEN, L"let %s%d=%s", coltoa(c), r, formula);
+
+                     } else {
+-                        double l = atof((char *) child_node->last->xmlChildrenNode->content);
++                        double l = (child_node->last != NULL &&
++                                    child_node->last->xmlChildrenNode != NULL &&
++                                    child_node->last->xmlChildrenNode->content != NULL)
++                                   ? atof((char *) child_node->last->xmlChildrenNode->content) : 0;
+                         swprintf(line_interp, FBUFLEN, L"let %s%d=%.15f", coltoa(c), r, l);
+                     }
+                     send_to_interp(line_interp);

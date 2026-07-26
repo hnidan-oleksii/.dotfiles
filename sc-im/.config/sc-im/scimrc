@@ -1,0 +1,10 @@
+set autocalc
+set numeric
+set numeric_decimal=0
+set overlap
+set xlsx_readformulas
+set show_cursor
+
+# :ccopy/:cpaste between files
+set copy_to_clipboard_delimited_tab
+set nocopy_to_clipboard_wysiwyg

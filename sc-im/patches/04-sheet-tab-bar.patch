@@ -1,0 +1,76 @@
+diff --git a/src/tui.c b/src/tui.c
+index 28fbd22..6c3ec16 100644
+--- a/src/tui.c
++++ b/src/tui.c
+@@ -1163,23 +1166,63 @@ void ui_show_celldetails() {
+         mvwprintw(input_win, 0, il_pos, "%s:", file_name);
+         il_pos += strlen(file_name) + 1;
+
+-        // show sheets
+-        struct sheet * sh;
+-        for (sh = rom->first_sh; sh != NULL; sh = sh->next) {
+-            if (sh == session->cur_doc->cur_sh) {
++        // count sheets and locate current
++        int total = 0, cur = 0, i = 0;
++        struct sheet * s2;
++        for (s2 = rom->first_sh; s2 != NULL; s2 = s2->next, i++) {
++            if (s2 == session->cur_doc->cur_sh) cur = i;
++            total++;
++        }
++        struct sheet * arr[total];
++        i = 0;
++        for (s2 = rom->first_sh; s2 != NULL; s2 = s2->next) arr[i++] = s2;
++
++        // position counter [idx/total]
++        char cnt[32];
++        sprintf(cnt, "[%d/%d] ", cur + 1, total);
++#ifdef USECOLORS
++        ui_set_ucolor(input_win, &ucolors[CELL_ID], DEFAULT_COLOR);
++#endif
++        mvwprintw(input_win, 0, il_pos, "%s", cnt);
++        il_pos += strlen(cnt);
++
++        // window tabs around current so it stays visible (reserve right side for cell info)
++        int show_cur = get_conf_int("show_cursor");
++        int budget = COLS - il_pos - 24;
++        if (budget < 12) budget = 12;
++        int lo = cur, hi = cur;
++        int used = strlen(arr[cur]->name) + 2 + (show_cur ? 1 : 0);
++        while (1) {
++            int grew = 0;
++            if (hi + 1 < total) {
++                int w = strlen(arr[hi+1]->name) + 2 + (show_cur ? 1 : 0);
++                if (used + w <= budget) { used += w; hi++; grew = 1; }
++            }
++            if (lo - 1 >= 0) {
++                int w = strlen(arr[lo-1]->name) + 2 + (show_cur ? 1 : 0);
++                if (used + w <= budget) { used += w; lo--; grew = 1; }
++            }
++            if (!grew) break;
++        }
++
++        // show sheets (windowed)
++        if (lo > 0) mvwprintw(input_win, 0, il_pos++, "<");
++        for (i = lo; i <= hi; i++) {
++            if (arr[i] == session->cur_doc->cur_sh) {
+ #ifdef USECOLORS
+                 ui_set_ucolor(input_win, &ucolors[CURRENT_SHEET], DEFAULT_COLOR);
+ #endif
+-                if (get_conf_int("show_cursor")) mvwprintw(input_win, 0, il_pos++, "*");
++                if (show_cur) mvwprintw(input_win, 0, il_pos++, "*");
+             } else {
+ #ifdef USECOLORS
+                 ui_set_ucolor(input_win, &ucolors[SHEET], DEFAULT_COLOR);
+ #endif
+-                if (get_conf_int("show_cursor")) mvwprintw(input_win, 0, il_pos++, " ");
++                if (show_cur) mvwprintw(input_win, 0, il_pos++, " ");
+             }
+-            mvwprintw(input_win, 0, il_pos, "{%s}", sh->name);
+-            il_pos += strlen(sh->name) + 2;
++            mvwprintw(input_win, 0, il_pos, "{%s}", arr[i]->name);
++            il_pos += strlen(arr[i]->name) + 2;
+         }
++        if (hi < total - 1) mvwprintw(input_win, 0, il_pos++, ">");
+         mvwprintw(input_win, 0, il_pos, "  ");
+         il_pos += 2;
+     }
