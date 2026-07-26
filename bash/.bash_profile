@@ -10,8 +10,9 @@ export HISTFILESIZE=20000
 export HISTSIZE=20000
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
-export ECORE_IMF_MODULE=xim
-export XMODIFIERS=@im=none
+export ECORE_IMF_MODULE=fcitx
+export SDL_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
 export EDITOR=nvim
 export BROWSER=one.ablaze.floorp
 # history: drop dups and space-prefixed (secret) commands
