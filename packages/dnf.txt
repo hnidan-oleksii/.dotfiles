@@ -75,3 +75,11 @@ xinput
 xorg-x11-drv-nvidia
 xorg-x11-drv-nvidia-libs
 xorg-x11-drv-nvidia-power
+
+# sc-im build deps
+bison
+flex
+libxls-devel
+libxlsxwriter-devel
+libzip-devel
+ncurses-devel

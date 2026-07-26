@@ -20,8 +20,12 @@ Fedora configs, managed with [GNU Stow](https://www.gnu.org/software/stow/). Eac
 | ssh         | `~/.ssh/config`                          |
 | tauon       | `~/.var/app/…/TauonMusicBox/tauon.conf`  |
 | wallpapers  | `~/Pictures/wallpapers`                  |
+| sc-im       | `~/.config/sc-im/scimrc`                 |
+| desktop     | `~/.config/mimeapps.list`, `~/.local/share/applications` |
 
-Not stowed: `packages/` (dnf/flatpak lists), `suckless/` (dwm/st patches), `floorp/` (userChrome/userContent CSS).
+Not stowed: `packages/` (dnf/flatpak lists), `suckless/` (dwm/st patches), `floorp/` (userChrome/userContent CSS), `sc-im/patches/` (source patches).
+
+`mimeapps.list` is a symlink, but anything calling `xdg-mime default` rewrites it by replacing the file, which breaks the link - thus need to re-run `stow -R -t ~ desktop` after that, or edit the repo copy directly.
 
 ## Install
 

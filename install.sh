@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
 
-PACKAGES=(nvim lf tmux bash bin alacritty git mangohud xorg dwm ssh tauon wallpapers)
+PACKAGES=(nvim lf tmux bash bin alacritty git mangohud xorg dwm ssh tauon wallpapers desktop sc-im)
 
 STOW_FLAGS=(-v)
 INSTALL_PACKAGES=0
