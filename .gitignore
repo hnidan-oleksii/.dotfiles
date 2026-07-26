@@ -2,6 +2,7 @@
 **/fcitx5/conf/cached_layouts
 **/fcitx5/conf/*.conf_*
 __pycache__
+lazy-lock.json
 
 *.swp
 *~
