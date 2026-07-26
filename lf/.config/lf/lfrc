@@ -34,11 +34,27 @@ cmd unarchive ${{ aunpack -- "$f"; }}
 # Trash via gio (spaces/collisions/restore-safe)
 cmd trash ${{ printf '%s\n' "$fx" | xargs -d '\n' -r gio trash --; }}
 
+# Types are sniffed by content: a .json holding one object per line is ndjson, an empty file is inode/x-empty
 cmd open &{{
-    case $(file --mime-type -Lb "$f") in
-        text/*|application/json) lf -remote "send $id \$nvim \"$fx\"";;
-        *) setsid -f xdg-open "$f" >/dev/null 2>&1 ;;
+    mime=$(file --mime-type -Lb "$f")
+    case $mime in
+        text/html|application/xhtml+xml) ;;
+        text/*|inode/x-empty|application/json|application/x-ndjson|application/xml|\
+        application/javascript|application/x-shellscript|application/x-desktop)
+            lf -remote "send $id \$nvim \"$fx\""
+            exit ;;
+        application/zip|application/gzip|application/x-tar|application/x-xz|\
+        application/zstd|application/x-bzip*|application/x-7z-compressed|\
+        application/vnd.rar|application/x-rar*)
+            lf -remote "send $id echoerr \"archive -- au to extract\""
+            exit ;;
     esac
+
+    if [ -n "$(xdg-mime query default "$mime")" ]; then
+        setsid -f xdg-open "$f" >/dev/null 2>&1
+    else
+        lf -remote "send $id echoerr \"no handler for $mime\""
+    fi
 }}
 
 cmd on-select &{{

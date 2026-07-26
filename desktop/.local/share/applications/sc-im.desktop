@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=sc-im
+Comment=Open spreadsheets in the terminal
+# absolute path: see nvim.desktop
+Exec=alacritty -e /home/surikadt/.local/bin/sc-im %f
+Terminal=false
+NoDisplay=true
+MimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.oasis.opendocument.spreadsheet;application/vnd.ms-excel;

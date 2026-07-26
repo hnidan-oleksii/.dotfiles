@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Neovim
+Comment=Edit text files
+Icon=nvim
+# the systemd user manager (which launches anything opened through a portal) has a bare /usr/bin PATH
+Exec=alacritty -e $HOME/.local/share/bob/nvim-bin/nvim %F
+Terminal=false
+StartupNotify=false
+Categories=Utility;TextEditor;
+Keywords=Text;editor;
+MimeType=text/plain;text/csv;application/json;

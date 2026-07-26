@@ -1,0 +1,52 @@
+# default handler per MIME type. Only the ones listed in /usr/share/mime/types
+
+[Default Applications]
+
+# text and code
+text/plain=nvim.desktop
+text/csv=nvim.desktop
+application/json=nvim.desktop
+application/x-ndjson=nvim.desktop
+inode/x-empty=nvim.desktop
+application/x-zerosize=nvim.desktop
+
+# web
+text/html=one.ablaze.floorp.desktop
+application/xhtml+xml=one.ablaze.floorp.desktop
+x-scheme-handler/http=one.ablaze.floorp.desktop
+x-scheme-handler/https=one.ablaze.floorp.desktop
+
+# spreadsheets
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=sc-im.desktop
+application/vnd.oasis.opendocument.spreadsheet=sc-im.desktop
+application/vnd.ms-excel=sc-im.desktop
+
+# audio
+audio/mpeg=com.github.taiko2k.tauonmb.desktop
+audio/mp4=com.github.taiko2k.tauonmb.desktop
+audio/flac=com.github.taiko2k.tauonmb.desktop
+audio/ogg=com.github.taiko2k.tauonmb.desktop
+audio/x-vorbis+ogg=com.github.taiko2k.tauonmb.desktop
+audio/x-opus+ogg=com.github.taiko2k.tauonmb.desktop
+audio/vnd.wave=com.github.taiko2k.tauonmb.desktop
+audio/x-ape=com.github.taiko2k.tauonmb.desktop
+audio/x-tta=com.github.taiko2k.tauonmb.desktop
+audio/x-mpegurl=com.github.taiko2k.tauonmb.desktop
+audio/x-scpls=com.github.taiko2k.tauonmb.desktop
+
+# images
+image/jpeg=feh.desktop
+image/png=feh.desktop
+image/webp=feh.desktop
+# gif goes to mpv so animations actually play
+image/gif=mpv.desktop
+
+# video
+video/mp4=mpv.desktop
+video/mpeg=mpv.desktop
+video/x-matroska=mpv.desktop
+video/webm=mpv.desktop
+
+# url schemes
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+x-scheme-handler/discord-831593107883032657=discord-831593107883032657.desktop
