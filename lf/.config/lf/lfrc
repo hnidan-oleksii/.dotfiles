@@ -98,14 +98,17 @@ map Cp copy-file
 map . set hidden!
 map T trash
 map p paste
-map d cut
-map y copy
 map <enter> open
 map R reload
 map mf mkfile
 map mk mkdir
 map bg setwallpaper
-map c clear
+
+# Clipboard ops repaint the parent column without erasing it first, so long
+# names bleed through as garbage. Fixed upstream in r41; force a redraw on r39.
+map y :copy; redraw
+map d :cut; redraw
+map c :clear; redraw
 
 # Movement
 map gr cd /
